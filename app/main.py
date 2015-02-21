@@ -169,16 +169,16 @@ def move():
 	grid = Grid(len(data['board'][0]), len(data['board']))
 	for snake in data['snakes']:
 		for coord in snake['coords']:
-			grid.obstruct(coord)
+			grid.obstruct(tuple(coord))
 		if snake['name'] != snakeName:
 			for direction in directions:
 				head = snake['coords'][0]
 				movement = (head[0] + direction[0], head[1] + direction[1])
-				grid.obstruct(movement)
+				grid.obstruct(tuple(movement))
 		else:
 			ourSnake = snake
 			
-	path = aStar(grid, ourSnake['coords'][0], data['food'][0])
+	path = aStar(grid, tuple(ourSnake['coords'][0]), tuple(data['food'][0]))
 	
 	move = 'left'
 	
