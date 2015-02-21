@@ -2,6 +2,7 @@ import bottle
 import json
 import heapq
 import random
+import copy
 
 ################################################################################
 # Constants                                                                    #
@@ -13,6 +14,9 @@ directions = {
 	(0, -1): 'up',
 	(0, 1): 'down'
 }
+
+trapSamples = 10
+trapEscapePercentageNeeded = 0.5
 
 ################################################################################
 # Classes                                                                      #
@@ -136,6 +140,27 @@ def aStar(grid, start, goal):
 				cameFrom[neighbour] = current
 	return False
 
+def ratePosition(grid, start, samples):
+		passes = 0
+		for i in range(samples):
+			goal = grid.random()
+			if aStar(grid, start, goal):
+				passes += 1
+		return float(passes) / samples
+
+def isTrap(grid, start):
+	score = ratePosition(grid, start, trapSamples)
+	return score < trapEscapePercentageNeeded
+
+def isPathTrap(grid, path):		#determine if we take a path or not
+	grid = copy.deepcopy(grid)	#makes grid copy
+	curr = path.start			#create iterator
+	grid.obstruct(curr)			#go through grid and obstruct it
+	while path.goTo[curr]:		#
+		grid.obstruct(curr)
+		curr = path.goTo[curr]
+	return isTrap(grid, curr)
+	
 
 ################################################################################
 # Server                                                                       #
@@ -143,42 +168,43 @@ def aStar(grid, start, goal):
 
 @bottle.get('/')
 def index():
-	return """
-		  <a href="https://github.com/sendwithus/battlesnake-python">
-			battlesnake-python
-		</a>
-	"""
-
-
+	return """<a href="https://github.com/sendwithus/battlesnake-python">battlesnake-python</a>"""
+#-------------------------------------------------------------------------------
 @bottle.post('/start')
 def start():
 	data = bottle.request.json
-
+	# Request:
+	#	game_id, width, height
+	
 	return json.dumps({
 		'name': snakeName,
 		'color': '#8B3626',
 		'head_url': 'http://i.imgur.com/7hhZkaN.gif',
 		'taunt': 'GRAWWRRGGGGGGGGGG!'
 	})
-
-
+#-------------------------------------------------------------------------------
 @bottle.post('/move')
 def move():
 	data = bottle.request.json
+	# Request:
+	#	game_id, turn, board, snakes, food
+	
 	ourSnake = None
- 
-	grid = Grid(len(data['board'][0]), len(data['board']))
-	for snake in data['snakes']:
-		for coord in snake['coords']:
-			grid.obstruct(tuple(coord))
-		if snake['name'] != snakeName:
-			for direction in directions:
-				head = snake['coords'][0]
-				movement = (head[0] + direction[0], head[1] + direction[1])
-				grid.obstruct(movement)
+ 	
+	grid = Grid(len(data['board'][0]), len(data['board']))				#makes base grid
+	for snake in data['snakes']:										#sorts through snakes
+		for coord in snake['coords']:									#get all snake coords
+			grid.obstruct(tuple(coord))									#make obstructions
+		if snake['name'] != snakeName:									#if snake is not our snake
+			for direction in directions:								#make all snake heads a obstruction
+				if len(snake['coords']) >= len(ourSnake['coords']): 	# if other snake larger, then obstruct where it can move to
+					head = snake['coords'][0]							#
+					movement = (head[0] + direction[0], head[1] + direction[1])	#
+					grid.obstruct(movement)								#
 		else:
 			ourSnake = snake
-
+	
+	#-------GET FOODS
 	possibleFoods = []
 	for food in data['food']:
 		dist = manDist(tuple(ourSnake['coords'][0]), tuple(food))
@@ -189,7 +215,8 @@ def move():
 				break
 		if not skip:
 			possibleFoods.append(tuple(food))
-	
+			
+	#-------GET CLOSEST FOOD
 	closestFoodDist = 0
 	closestFood = None
 	for food in possibleFoods:
@@ -198,30 +225,40 @@ def move():
 			closestFood = food
 			closestFoodDist = d
 	idle = False
+	
 	if closestFood != None:
 		path = aStar(grid, tuple(ourSnake['coords'][0]), closestFood)
-		if path != False:
+		if path != False and not isPathTrap(grid, path):
 			move = directions[path.direction()]
 		else:
 			idle = True
 	else:
 		idle = True
 	
+	
+	#------IDLE MOVEMENTS
 	if idle:
 		move = 'left'
 	
-	#---------------------------------------------
+	#------DIRECTION CHECK
+	
+	
+	#------------------RETURN TO SERVER-----------
 	return json.dumps({
 		'move': move,
 		'taunt': 'Feel the power of the mongoose!'
 	})
 	#---------------------------------------------
-
+	
+	
+#-------------------------------------------------------------------------------
 @bottle.post('/end')
 def end():
 	data = bottle.request.json
+	# Request:
+	#	game_id
 
 	return json.dumps({})
-
+#-------------------------------------------------------------------------------
 # Expose WSGI app
 application = bottle.default_app()
