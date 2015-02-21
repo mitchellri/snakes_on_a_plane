@@ -156,7 +156,7 @@ def start():
 
 	return json.dumps({
 		'name': snakeName,
-		'color': '#EF0006',
+		'color': '#8B3626',
 		'head_url': 'http://i.imgur.com/7hhZkaN.gif',
 		'taunt': 'GRAWWRRGGGGGGGGGG!'
 	})
@@ -184,7 +184,7 @@ def move():
 		dist = manDist(tuple(ourSnake['coords'][0]), tuple(food))
 		skip = False
 		for snake in data['snakes']:
-			if manDist(tuple(snake['coords'][0]), tuple(food)) < dist:
+			if manDist(tuple(snake['coords'][0]), tuple(food)) <= dist:
 				skip = True
 				break
 		if not skip:
@@ -213,7 +213,7 @@ def move():
 	
 	return json.dumps({
 		'move': move,
-		'taunt': 'battlesnake-python!'
+		'taunt': 'Feel the power of the mongoose!'
 	})
 
 
