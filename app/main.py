@@ -167,7 +167,7 @@ def move():
 	data = bottle.request.json
 	ourSnake = None
  
-	grid = Grid(len(data['board'][0]), len(d	ata['board']))
+	grid = Grid(len(data['board'][0]), len(data['board']))
 	for snake in data['snakes']:
 		for coord in snake['coords']:
 			grid.obstruct(tuple(coord))
