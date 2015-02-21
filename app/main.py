@@ -184,7 +184,7 @@ def move():
 		dist = manDist(tuple(ourSnake['coords'][0]), tuple(food))
 		skip = False
 		for snake in data['snakes']:
-			if manDist(tuple(snake['coords'][0]), tuple(food)) <= dist:
+			if snake['name'] != snakeName and manDist(tuple(snake['coords'][0]), tuple(food)) <= dist:
 				skip = True
 				break
 		if not skip:
@@ -210,12 +210,12 @@ def move():
 	if idle:
 		move = 'left'
 	
-	
+	#---------------------------------------------
 	return json.dumps({
 		'move': move,
 		'taunt': 'Feel the power of the mongoose!'
 	})
-
+	#---------------------------------------------
 
 @bottle.post('/end')
 def end():
