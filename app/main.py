@@ -38,15 +38,16 @@ class PriorityQueue:
 # Used for converting backwards path returned by A* to forwards, also finding
 # direction to move
 #
-class Path:
-	def cameFrom(cameFrom, goal):
-		goTo = { goal: None }
-		start = goal
-		while cameFrom[start]:
-			goTo[cameFrom[start]] = start
-			start = cameFrom[start]
-		return Path(goTo, start)
 
+def pathCameFrom(cameFrom, goal):
+	goTo = { goal: None }
+	start = goal
+	while cameFrom[start]:
+		goTo[cameFrom[start]] = start
+		start = cameFrom[start]
+	return Path(goTo, start)
+
+class Path:
 	def __init__(self, goTo, start):
 		self.goTo = goTo
 		self.start = start
@@ -123,7 +124,7 @@ def aStar(grid, start, goal):
 	while not frontier.empty():
 		current = frontier.dequeue()
 		if current == goal:
-			return Path.cameFrom(cameFrom, goal)
+			return pathCameFrom(cameFrom, goal)
 
 		for neighbour in grid.neighbours(current):
 			cost = costSoFar[current] + grid.heuristic(neighbour)
@@ -174,7 +175,7 @@ def move():
 			for direction in directions:
 				head = snake['coords'][0]
 				movement = (head[0] + direction[0], head[1] + direction[1])
-				grid.obstruct(tuple(movement))
+				grid.obstruct(movement)
 		else:
 			ourSnake = snake
 			
