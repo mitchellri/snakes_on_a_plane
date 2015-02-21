@@ -157,8 +157,8 @@ def start():
 	return json.dumps({
 		'name': snakeName,
 		'color': '#EF0006',
-		'head_url': 'http://snakesonaplane.herokuapp.com',
-		'taunt': 'battlesnake-python!'
+		'head_url': 'http://i.imgur.com/7hhZkaN.gif',
+		'taunt': 'GRAWWRRGGGGGGGGGG!'
 	})
 
 
@@ -167,7 +167,7 @@ def move():
 	data = bottle.request.json
 	ourSnake = None
  
-	grid = Grid(len(data['board'][0]), len(data['board']))
+	grid = Grid(len(data['board'][0]), len(d	ata['board']))
 	for snake in data['snakes']:
 		for coord in snake['coords']:
 			grid.obstruct(tuple(coord))
@@ -178,13 +178,38 @@ def move():
 				grid.obstruct(movement)
 		else:
 			ourSnake = snake
-			
-	path = aStar(grid, tuple(ourSnake['coords'][0]), tuple(data['food'][0]))
+
+	possibleFoods = []
+	for food in data['food']:
+		dist = manDist(tuple(ourSnake['coords'][0]), tuple(food))
+		skip = False
+		for snake in data['snakes']:
+			if manDist(tuple(snake['coords'][0]), tuple(food)) < dist:
+				skip = True
+				break
+		if not skip:
+			possibleFoods.append(tuple(food))
 	
-	move = 'left'
+	closestFoodDist = 0
+	closestFood = None
+	for food in possibleFoods:
+		d = manDist(tuple(ourSnake['coords'][0]), food)
+		if d < closestFoodDist or closestFood == None:
+			closestFood = food
+			closestFoodDist = d
+	idle = False
+	if closestFood != None:
+		path = aStar(grid, tuple(ourSnake['coords'][0]), closestFood))
+		if path != False:
+			move = directions[path.direction()]
+		else:
+			idle = True
+	else:
+		idle = True
 	
-	if path != False:
-		move = directions[path.direction()]
+	if idle:
+		move = 'left'
+	
 	
 	return json.dumps({
 		'move': move,
