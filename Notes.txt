@@ -1,0 +1,20 @@
+
+
+1. Make grid for pathfinding, mark snakes, any locations
+   that they can potentially move to as obstructed
+2. Check if food exists that no other snake can get to faster
+Yes ->
+    1. Pathfind to food
+    2. Make grid with cells as if our snake took the path as obstructed
+    3. Check paths to random cells from food, if a certain ratio of paths away are
+       blocked, assume food is a dead end
+    Yes ->
+        Go on path towards food
+    No ->
+        |
+        v
+        
+No -> Do some sort of idle state, wasting moves, but avoiding obstacles (possibly
+    just pathfinding to random cells
+    
+
