@@ -142,64 +142,62 @@ def aStar(grid, start, goal):
 
 @bottle.get('/')
 def index():
-    return """
-        <a href="https://github.com/sendwithus/battlesnake-python">
-            battlesnake-python
-        </a>
-    """
+	return """
+		  <a href="https://github.com/sendwithus/battlesnake-python">
+			battlesnake-python
+		</a>
+	"""
 
 
 @bottle.post('/start')
 def start():
-    data = bottle.request.json
+	data = bottle.request.json
 
-    return json.dumps({
-        'name': snakeName,
-        'color': '#EF0006',
-        'head_url': 'http://battlesnake-python.herokuapp.com',
-        'taunt': 'battlesnake-python!'
-    })
+	return json.dumps({
+		'name': snakeName,
+		'color': '#EF0006',
+		'head_url': 'http://battlesnake-python.herokuapp.com',
+		'taunt': 'battlesnake-python!'
+	})
 
 
 @bottle.post('/move')
 def move():
-    data = bottle.request.json
-
-	ourSnake = None
-    
-    grid = Grid(len(data.board[0]), len(data.board))
-    for snake in data.snakes:
-        if snake.state == "alive":
-            for coord in snake.coords:
-                grid.obstruct(coord)
-            if snake.name != snakeName:
-                for direction in directions:
-                    head = snake.coords[0]
-                    movement = (head[0] + direction[0], head[1] + direction[1])
-                    grid.obstruct(movement)
-            else:
-                ourSnake = snake
-            
-    path = aStar(grid, ourSnake.coords[0], data.food[0])
-    
-    
-    move = 'left'
-    
-    if path != False:
-        move = directions[path.direction()]
+	data = bottle.request.json
 	
-
-    return json.dumps({
-        'move': move,
-        'taunt': 'battlesnake-python!'
-    })
+	ourSnake = None
+ 
+	grid = Grid(len(data.board[0]), len(data.board))
+	for snake in data.snakes:
+		if snake.state == "alive":
+			for coord in snake.coords:
+				grid.obstruct(coord)
+			if snake.name != snakeName:
+				for direction in directions:
+					head = snake.coords[0]
+					movement = (head[0] + direction[0], head[1] + direction[1])
+					grid.obstruct(movement)
+			else:
+				ourSnake = snake
+			
+	path = aStar(grid, ourSnake.coords[0], data.food[0])
+	
+	move = 'left'
+	
+	if path != False:
+		move = directions[path.direction()]
+	
+	return json.dumps({
+		'move': move,
+		'taunt': 'battlesnake-python!'
+	})
 
 
 @bottle.post('/end')
 def end():
-    data = bottle.request.json
+	data = bottle.request.json
 
-    return json.dumps({})
+	return json.dumps({})
 
 # Expose WSGI app
 application = bottle.default_app()
