@@ -199,7 +199,7 @@ def move():
 			closestFoodDist = d
 	idle = False
 	if closestFood != None:
-		path = aStar(grid, tuple(ourSnake['coords'][0]), closestFood))
+		path = aStar(grid, tuple(ourSnake['coords'][0]), closestFood)
 		if path != False:
 			move = directions[path.direction()]
 		else:
