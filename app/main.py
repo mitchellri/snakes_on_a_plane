@@ -155,7 +155,7 @@ def start():
 
     return json.dumps({
         'name': snakeName,
-        'color': '#00ff00',
+        'color': '#EF0006',
         'head_url': 'http://battlesnake-python.herokuapp.com',
         'taunt': 'battlesnake-python!'
     })
@@ -165,8 +165,7 @@ def start():
 def move():
     data = bottle.request.json
 
-
-    ourSnake = None
+	ourSnake = None
     
     grid = Grid(len(data.board[0]), len(data.board))
     for snake in data.snakes:
@@ -188,7 +187,7 @@ def move():
     
     if path != False:
         move = directions[path.direction()]
-
+	
 
     return json.dumps({
         'move': move,
