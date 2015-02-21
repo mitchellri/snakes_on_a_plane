@@ -17,6 +17,7 @@ directions = {
 
 trapSamples = 10
 trapEscapePercentageNeeded = 0.5
+idlePathSamples = 10
 
 ################################################################################
 # Classes                                                                      #
@@ -191,6 +192,12 @@ def move():
 	
 	ourSnake = None
  	
+ 	# Find our snake
+ 	for snake in data['snakes']:
+ 		if snake['name'] == snakeName:
+ 			ourSnake = snake
+ 			break
+ 	
 	grid = Grid(len(data['board'][0]), len(data['board']))				#makes base grid
 	for snake in data['snakes']:										#sorts through snakes
 		for coord in snake['coords']:									#get all snake coords
@@ -201,8 +208,6 @@ def move():
 					head = snake['coords'][0]							#
 					movement = (head[0] + direction[0], head[1] + direction[1])	#
 					grid.obstruct(movement)								#
-		else:
-			ourSnake = snake
 	
 	#-------GET FOODS
 	possibleFoods = []
@@ -237,10 +242,44 @@ def move():
 	
 	
 	#------IDLE MOVEMENTS
+	simpleMovements = False
 	if idle:
+		path = False
+		ind = 0
+		while not path and ind < idlePathSamples:
+			tmpPath = aStar(grid, tuple(ourSnake['coords'][0]), grid.random())
+			if tmpPath != False and not isPathTrap(grid, tmpPath):
+				path = tmpPath
+			ind+= 1
+	
+		if path:
+			move = directions[path.direction()]
+		else:
+			simpleMovements = True
+			
+	if simpleMovements:
 		move = 'left'
 	
+	
 	#------DIRECTION CHECK
+	#headCheck = snake['coords'][0]
+	#checkX = headCheck[0]
+	#checkY = headCheck[1]
+	#checkDirection = False
+	#checkLeft = True
+	#checkRight = True
+	#checkUp = True
+	#checkDown = True
+	#
+	#if move == 'left':
+	#	
+	#	
+	#else if move == 'right':
+	#	
+	#else if move == 'up':
+	#	
+	#else if move == 'down':
+			
 	
 	
 	#------------------RETURN TO SERVER-----------
