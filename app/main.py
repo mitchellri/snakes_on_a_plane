@@ -21,9 +21,8 @@ directions = {
 	(0, 1): 'down'
 }
 
-trapSamples = 10
-#trapEscapePercentageNeeded = 0.5
-idlePathSamples = 10
+trapSamples = 20
+idlePathSamples = 20
 
 ################################################################################
 # Classes                                                                      #
@@ -311,11 +310,16 @@ def move():
 			simpleMovements = True
 			
 	if simpleMovements:
+		bGrid = Grid(len(data['board'][0]), len(data['board']))				#makes base grid
+		for snake in data['snakes']:										#sorts through snakes
+			for coord in snake['coords']:									#get all snake coords
+				bGrid.obstruct(tuple(coord))									#make obstructions
+		
 		path = False
 		ind = 0
 		while not path and ind < idlePathSamples:
-			goal = grid.random()
-			tmpPath = aStar(grid, tuple(ourSnake['coords'][0]), goal)
+			goal = bGrid.random()
+			tmpPath = aStar(bGrid, tuple(ourSnake['coords'][0]), goal)
 			if tmpPath != False:
 				path = tmpPath
 		if path:
@@ -337,12 +341,18 @@ def move():
 	transpos=  (curpos[0] + curdir[0], curpos[1] + curdir[1])
 	
 	if not grid.contains(transpos) or grid.obstructed(transpos):
+		
+		cGrid = Grid(len(data['board'][0]), len(data['board']))				#makes base grid
+		for snake in data['snakes']:										#sorts through snakes
+			for coord in snake['coords']:									#get all snake coords
+				cGrid.obstruct(tuple(coord))									#make obstructions
+				
 		for direction in directions:
 			if direction == curdir:
 				continue
 			newpos = (curpos[0] + direction[0], curpos[1] + direction[1])
 	
-			if grid.contains(newpos) and not grid.obstructed(newpos):
+			if cGrid.contains(newpos) and not cGrid.obstructed(newpos):
 				move = directions[direction]
 				break
 	#TO ADD: make so that it can check end of snakes adjacent to find openings
