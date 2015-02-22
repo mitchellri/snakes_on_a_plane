@@ -332,6 +332,8 @@ def move():
 	checkUp = False
 	checkDown = False
 	while(not checkDirection):
+		if checkLeft and checkRight and checkUp and checkDown:
+			checkDirection = True
 		if move == 'left':#check left
 			checkLeft = True
 			if (checkX-1 < 0) or (grid.obstructed((checkX-1,checkY))):
