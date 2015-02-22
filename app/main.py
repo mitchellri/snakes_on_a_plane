@@ -277,7 +277,7 @@ def move():
 	
 	if closestFood != None:
 		path = aStar(grid, tuple(ourSnake['coords'][0]), closestFood)
-		if path != False and not isPositionBetter(grid, tuple(ourSnake['coords'][0]), path, closestFood):
+		if path != False and not isPositionBetter(grid, ourSnake, tuple(ourSnake['coords'][0]), path, closestFood):
 			move = directions[path.direction()]
 		else:
 			idle = True
@@ -293,7 +293,7 @@ def move():
 		while not path and ind < idlePathSamples:
 			goal = grid.random()
 			tmpPath = aStar(grid, tuple(ourSnake['coords'][0]), goal)
-			if tmpPath != False and not isPositionBetter(grid, snake, tuple(ourSnake['coords'][0]), tmpPath, goal):
+			if tmpPath != False and not isPositionBetter(grid, ourSnake, tuple(ourSnake['coords'][0]), tmpPath, goal):
 				path = tmpPath
 			ind+= 1
 		if path:
