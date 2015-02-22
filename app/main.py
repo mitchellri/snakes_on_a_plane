@@ -5,6 +5,12 @@ import random
 import copy
 
 ################################################################################
+# Taunts                                                                    #
+################################################################################
+
+tList = ['Feel the power of the mongoose!','I like to move it move it!','You wanna go bruh? Wanna go? HUH?','Do you fear death?','Let of some ssssssteam...','PURGEEEEEEEE','Come on kill meeee!']
+lenTList = len(tList)-1
+################################################################################
 # Constants                                                                    #
 ################################################################################
 snakeName = 'snakes-on-a-plane'
@@ -16,7 +22,7 @@ directions = {
 }
 
 trapSamples = 10
-trapEscapePercentageNeeded = 0.5
+#trapEscapePercentageNeeded = 0.5
 idlePathSamples = 10
 
 ################################################################################
@@ -141,6 +147,7 @@ def aStar(grid, start, goal):
 				cameFrom[neighbour] = current
 	return False
 
+"""
 def ratePosition(grid, start, samples):
 		passes = 0
 		for i in range(samples):
@@ -161,6 +168,24 @@ def isPathTrap(grid, path):		#determine if we take a path or not
 		grid.obstruct(curr)
 		curr = path.goTo[curr]
 	return isTrap(grid, curr)
+"""
+
+def isPositionBetter(grid, current, pathTo, to):
+	currentPasses = 0
+	toPasses = 0
+	toGrid = copy.deepcopy(grid)
+	curr = current
+	toGrid.obstruct(curr)
+	while pathTo.goTo[curr]:		#
+		toGrid.obstruct(curr)
+		curr = pathTo.goTo[curr]
+	for _ in range(trapSamples):
+		goal = grid.random()
+		if aStar(grid, current, goal):
+			currentPasses += 1
+		if aStar(toGrid, to, goal):
+			toPasses += 1
+	return toPasses >= currentPasses
 	
 
 ################################################################################
@@ -233,7 +258,7 @@ def move():
 	
 	if closestFood != None:
 		path = aStar(grid, tuple(ourSnake['coords'][0]), closestFood)
-		if path != False and not isPathTrap(grid, path):
+		if path != False and not isPositionBetter(grid, tuple(ourSnake['coords'][0]), path, closestFood):
 			move = directions[path.direction()]
 		else:
 			idle = True
@@ -247,45 +272,85 @@ def move():
 		path = False
 		ind = 0
 		while not path and ind < idlePathSamples:
-			tmpPath = aStar(grid, tuple(ourSnake['coords'][0]), grid.random())
-			if tmpPath != False and not isPathTrap(grid, tmpPath):
+			goal = grid.random()
+			tmpPath = aStar(grid, tuple(ourSnake['coords'][0]), goal)
+			if tmpPath != False and not isPositionBetter(grid, tuple(ourSnake['coords'][0]), tmpPath, goal):
 				path = tmpPath
 			ind+= 1
-	
 		if path:
 			move = directions[path.direction()]
 		else:
 			simpleMovements = True
 			
 	if simpleMovements:
-		move = 'left'
+		path = False
+		ind = 0
+		while not path and ind < idlePathSamples:
+			goal = grid.random()
+			tmpPath = aStar(grid, tuple(ourSnake['coords'][0]), goal)
+			if tmpPath != False:
+				path = tmpPath
+		if path:
+			move = directions[path.direction()]
 	
 	
 	#------DIRECTION CHECK
-	#headCheck = snake['coords'][0]
-	#checkX = headCheck[0]
-	#checkY = headCheck[1]
-	#checkDirection = False
-	#checkLeft = True
-	#checkRight = True
-	#checkUp = True
-	#checkDown = True
-	#
-	#if move == 'left':
-	#	
-	#	
-	#else if move == 'right':
-	#	
-	#else if move == 'up':
-	#	
-	#else if move == 'down':
-			
-	
+	headCheck = snake['coords'][0]
+	checkX = headCheck[0]
+	checkY = headCheck[1]
+	checkDirection = False
+	checkLeft = False
+	checkRight = False
+	checkUp = False
+	checkDown = False
+	while(not checkDirection):
+		if move == 'left':#check left
+			checkLeft = True
+			if (checkX-1 < 0) or (grid.obstructed((checkX-1,checkY))):
+				if not checkUp:
+					move = 'up'#can up?
+				elif not checkDown:
+					move = 'down'#can down?
+				else:
+					#move = 'right'#kill self with right
+					checkDirection = True
+		elif move == 'right': #check right
+			checkright = True
+			if (checkX+1 > grid.width-1) or (grid.obstructed((checkX+1,checkY))):
+				if not checkUp:
+					move = 'up'#can up?
+				elif not checkDown:
+					move = 'down'#can down?
+				else:
+					#move = 'left' #kill self with left
+					checkDirection = True
+		elif move == 'up':#check up
+			checkUp = True
+			if (checkY-1 < 0) or (grid.obstructed((checkX,checkY-1))):
+				if not checkRight:
+					move = 'right'#can right?
+				elif not checkLeft:
+					move = 'left'#can left?
+				else:
+					#move = 'down'#kill self with down
+					checkDirection = True
+		elif move == 'down':#check down
+			checkDown = True
+			if (checkY+1 > grid.height-1) or (grid.obstructed((checkX,checkY+1))):
+				if not checkRight:
+					move = 'right'#can right?
+				elif not checkLeft:
+					move = 'left'#can left?
+				else:
+					#move = 'up'#kill self with up
+					checkDirection = True
+	#TO ADD: make so that it can check end of snakes adjacent to find openings
+	#		 
 	
 	#------------------RETURN TO SERVER-----------
 	return json.dumps({
 		'move': move,
-		'taunt': 'Feel the power of the mongoose!'
+		'taunt': tList[random.randint(0,lenTList)]
 	})
 	#---------------------------------------------
 	
