@@ -243,91 +243,89 @@ def move():
 	#	game_id, turn, board, snakes, food
 	move = None
 	ourSnake = None
- 	try:
-	 	# Find our snake
-	 	for snake in data['snakes']:
-	 		if snake['name'] == snakeName:
-	 			ourSnake = snake
-	 			break
-	 	
-		grid = Grid(len(data['board'][0]), len(data['board']))				#makes base grid
-		for snake in data['snakes']:										#sorts through snakes
-			for coord in snake['coords']:									#get all snake coords
-				grid.obstruct(tuple(coord))									#make obstructions
-			if snake['name'] != snakeName:									#if snake is not our snake
-				for direction in directions:								#make all snake heads a obstruction
-					if len(snake['coords']) >= len(ourSnake['coords']): 	# if other snake larger, then obstruct where it can move to
-						head = snake['coords'][0]							#
-						movement = (head[0] + direction[0], head[1] + direction[1])	#
-						grid.obstruct(movement)								#
-		
-		#-------GET FOODS
-		possibleFoods = []
-		for food in data['food']:
-			dist = manDist(tuple(ourSnake['coords'][0]), tuple(food))
-			skip = False
-			for snake in data['snakes']:
-				if snake['name'] != snakeName and manDist(tuple(snake['coords'][0]), tuple(food)) <= dist:
-					skip = True
-					break
-			if not skip:
-				possibleFoods.append(tuple(food))
-				
-		#-------GET CLOSEST FOOD
-		closestFoodDist = 0
-		closestFood = None
-		for food in possibleFoods:
-			d = manDist(tuple(ourSnake['coords'][0]), food)
-			if d < closestFoodDist or closestFood == None:
-				closestFood = food
-				closestFoodDist = d
-		idle = False
-		
-		if closestFood != None:
-			path = aStar(grid, tuple(ourSnake['coords'][0]), closestFood)
-			if path != False and not isPositionBetter(grid, ourSnake, tuple(ourSnake['coords'][0]), path, closestFood):
-				move = directions[path.direction()]
-			else:
-				idle = True
+ 	
+ 	# Find our snake
+ 	for snake in data['snakes']:
+ 		if snake['name'] == snakeName:
+ 			ourSnake = snake
+ 			break
+ 	
+	grid = Grid(len(data['board'][0]), len(data['board']))				#makes base grid
+	for snake in data['snakes']:										#sorts through snakes
+		for coord in snake['coords']:									#get all snake coords
+			grid.obstruct(tuple(coord))									#make obstructions
+		if snake['name'] != snakeName:									#if snake is not our snake
+			for direction in directions:								#make all snake heads a obstruction
+				if len(snake['coords']) >= len(ourSnake['coords']): 	# if other snake larger, then obstruct where it can move to
+					head = snake['coords'][0]							#
+					movement = (head[0] + direction[0], head[1] + direction[1])	#
+					grid.obstruct(movement)								#
+	
+	#-------GET FOODS
+	possibleFoods = []
+	for food in data['food']:
+		dist = manDist(tuple(ourSnake['coords'][0]), tuple(food))
+		skip = False
+		for snake in data['snakes']:
+			if snake['name'] != snakeName and manDist(tuple(snake['coords'][0]), tuple(food)) <= dist:
+				skip = True
+				break
+		if not skip:
+			possibleFoods.append(tuple(food))
+			
+	#-------GET CLOSEST FOOD
+	closestFoodDist = 0
+	closestFood = None
+	for food in possibleFoods:
+		d = manDist(tuple(ourSnake['coords'][0]), food)
+		if d < closestFoodDist or closestFood == None:
+			closestFood = food
+			closestFoodDist = d
+	idle = False
+	
+	if closestFood != None:
+		path = aStar(grid, tuple(ourSnake['coords'][0]), closestFood)
+		if path != False and not isPositionBetter(grid, ourSnake, tuple(ourSnake['coords'][0]), path, closestFood):
+			move = directions[path.direction()]
 		else:
 			idle = True
-		
-		
-		#------IDLE MOVEMENTS
-		simpleMovements = False
-		if idle:
-			path = False
-			ind = 0
-			while not path and ind < idlePathSamples:
-				goal = grid.random()
-				tmpPath = aStar(grid, tuple(ourSnake['coords'][0]), goal)
-				if tmpPath != False and not isPositionBetter(grid, ourSnake, tuple(ourSnake['coords'][0]), tmpPath, goal):
-					path = tmpPath
-				ind+= 1
-			if path:
-				move = directions[path.direction()]
-			else:
-				simpleMovements = True
-				
-		if simpleMovements:
-			bGrid = Grid(len(data['board'][0]), len(data['board']))				#makes base grid
-			for snake in data['snakes']:										#sorts through snakes
-				for coord in snake['coords']:									#get all snake coords
-					bGrid.obstruct(tuple(coord))									#make obstructions
-				bbb = snake['coords'][-1]
-				bGrid.cells[bbb[0]][bbb[1]] = 0
+	else:
+		idle = True
+	
+	
+	#------IDLE MOVEMENTS
+	simpleMovements = False
+	if idle:
+		path = False
+		ind = 0
+		while not path and ind < idlePathSamples:
+			goal = grid.random()
+			tmpPath = aStar(grid, tuple(ourSnake['coords'][0]), goal)
+			if tmpPath != False and not isPositionBetter(grid, ourSnake, tuple(ourSnake['coords'][0]), tmpPath, goal):
+				path = tmpPath
+			ind+= 1
+		if path:
+			move = directions[path.direction()]
+		else:
+			simpleMovements = True
 			
-			path = False
-			ind = 0
-			while not path and ind < idlePathSamples:
-				goal = bGrid.random()
-				tmpPath = aStar(bGrid, tuple(ourSnake['coords'][0]), goal)
-				if tmpPath != False:
-					path = tmpPath
-			if path:
-				move = directions[path.direction()]
-	except:
-		pass
+	if simpleMovements:
+		bGrid = Grid(len(data['board'][0]), len(data['board']))				#makes base grid
+		for snake in data['snakes']:										#sorts through snakes
+			for coord in snake['coords']:									#get all snake coords
+				bGrid.obstruct(tuple(coord))									#make obstructions
+			bbb = snake['coords'][-1]
+			bGrid.cells[bbb[0]][bbb[1]] = 0
+		
+		path = False
+		ind = 0
+		while not path and ind < idlePathSamples:
+			goal = bGrid.random()
+			tmpPath = aStar(bGrid, tuple(ourSnake['coords'][0]), goal)
+			if tmpPath != False:
+				path = tmpPath
+		if path:
+			move = directions[path.direction()]
 	
 	
 	
