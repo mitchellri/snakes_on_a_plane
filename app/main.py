@@ -322,66 +322,29 @@ def move():
 			move = directions[path.direction()]
 	
 	
+	
 	#------DIRECTION CHECK ***FAILSAFE***
-	headCheck = snake['coords'][0]
-	checkX = headCheck[0]
-	checkY = headCheck[1]
-	checkDirection = False
-	checkLeft = False
-	checkRight = False
-	checkUp = False
-	checkDown = False
-	while(not checkDirection):
-		if checkLeft and checkRight and checkUp and checkDown:
-			checkDirection = True
-		if move == 'left':#check left
-			checkLeft = True
-			if (checkX-1 < 0) or (grid.obstructed((checkX-1,checkY))):
-				if not checkUp:
-					move = 'up'#can up?
-				elif not checkDown:
-					move = 'down'#can down?
-				else:
-					#move = 'right'#kill self with right
-					checkDirection = True
-			else:
-				checkDirection = True
-		elif move == 'right': #check right
-			checkright = True
-			if (checkX+1 > grid.width-1) or (grid.obstructed((checkX+1,checkY))):
-				if not checkUp:
-					move = 'up'#can up?
-				elif not checkDown:
-					move = 'down'#can down?
-				else:
-					#move = 'left' #kill self with left
-					checkDirection = True
-			else:
-				checkDirection = True
-		elif move == 'up':#check up
-			checkUp = True
-			if (checkY-1 < 0) or (grid.obstructed((checkX,checkY-1))):
-				if not checkRight:
-					move = 'right'#can right?
-				elif not checkLeft:
-					move = 'left'#can left?
-				else:
-					#move = 'down'#kill self with down
-					checkDirection = True
-			else:
-				checkDirection = True
-		elif move == 'down':#check down
-			checkDown = True
-			if (checkY+1 > grid.height-1) or (grid.obstructed((checkX,checkY+1))):
-				if not checkRight:
-					move = 'right'#can right?
-				elif not checkLeft:
-					move = 'left'#can left?
-				else:
-					#move = 'up'#kill self with up
-					checkDirection = True
-			else:
-				checkDirection = True
+	if move == None:
+		move = 'left'
+		
+	curdir = None
+	for direction in directions:
+		if move == directions[direction]:
+			curdir = direction
+			break
+	
+	curpos = tuple(ourSnake['coords'][0])
+	transpos=  (curpos[0] + curdir[0], curpos[1] + curdir[1])
+	
+	if not grid.contains(transpos) or grid.obstructed(transpos):
+		for direction in directions:
+			if direction == curdir:
+				continue
+			newpos = (curpos[0] + direction[0], curpos[1] + direction[1])
+	
+			if grid.contains(newpos) and not grid.obstructed(newpos):
+				move = directions[direction]
+				break
 	#TO ADD: make so that it can check end of snakes adjacent to find openings
 	#		 
 	
