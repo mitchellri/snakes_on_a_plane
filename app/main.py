@@ -8,7 +8,7 @@ import copy
 # Taunts                                                                    #
 ################################################################################
 
-tList = ['Feel the power of the mongoose!','I like to move it move it!','Listen to my mix tape!','You wanna go bruh? Wanna go? HUH?','Staying alive! Staying alive!','Pretty good eh?','Do you fear death?','Let of some ssssssteam...','PURGEEEEEEEE','Come on, kill meeee!','You require more Vespene Gas!','You require more pylons!','Require more overlords!!!','Fear the power of the force...','My goose is bigger than yours!']
+tList = ['Feel the power of the mongoose!','I like to move it move it!','Listen to my mix tape!','You wanna go bruh? Wanna go? HUH?','Staying alive! Staying alive!','Pretty good eh?','Do you fear death?','Let of some ssssssteam...','PURGEEEEEEEE','Come on, kill meeee!','You require more Vespene Gas!','You require more pylons!','Require more overlords!!!','Fear the power of the force...','My goose is bigger than yours!','GRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA']
 lenTList = len(tList)-1
 ################################################################################
 # Constants                                                                    #
@@ -187,16 +187,24 @@ def isPositionBetter(grid, snake, current, pathTo, to):
 
 	x = len(snake['coords']) - count
 	while x > 0:
-		toGrid.obstruct(snake['coords'][-x])
+		toGrid.obstruct(snake['coords'][x - 1])
 		x -= 1
 
-	at = count - len(snake['coords'])
-	index = 0
-	while pathTo.goTo[curr]:
-		if at >= index:
-			toGrid.obstruct(curr)
+	if len(snake['coords']) >= count:
+		curr = current
 		curr = pathTo.goTo[curr]
-		index += 1
+		while curr:
+			toGrid.obstruct(curr)
+			curr = pathTo.goTo[curr]
+	else:
+		curr = current
+		curr = pathTo.goTo[curr]
+		index = 0
+		while curr:
+			if index >= count - len(snake['coords']):
+				toGrid.obstruct(curr)
+			curr = pathTo.goTo[curr]
+			index += 1
 		
 	for _ in range(trapSamples):
 		goal = grid.random()
