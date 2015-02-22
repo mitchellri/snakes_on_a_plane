@@ -344,6 +344,8 @@ def move():
 				else:
 					#move = 'right'#kill self with right
 					checkDirection = True
+			else:
+				checkDirection = True
 		elif move == 'right': #check right
 			checkright = True
 			if (checkX+1 > grid.width-1) or (grid.obstructed((checkX+1,checkY))):
@@ -354,6 +356,8 @@ def move():
 				else:
 					#move = 'left' #kill self with left
 					checkDirection = True
+			else:
+				checkDirection = True
 		elif move == 'up':#check up
 			checkUp = True
 			if (checkY-1 < 0) or (grid.obstructed((checkX,checkY-1))):
@@ -364,6 +368,8 @@ def move():
 				else:
 					#move = 'down'#kill self with down
 					checkDirection = True
+			else:
+				checkDirection = True
 		elif move == 'down':#check down
 			checkDown = True
 			if (checkY+1 > grid.height-1) or (grid.obstructed((checkX,checkY+1))):
@@ -374,6 +380,8 @@ def move():
 				else:
 					#move = 'up'#kill self with up
 					checkDirection = True
+			else:
+				checkDirection = True
 	#TO ADD: make so that it can check end of snakes adjacent to find openings
 	#		 
 	
