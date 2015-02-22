@@ -94,8 +94,9 @@ class Grid:
 
 	# Obstructs a cell on the grid
 	def obstruct(self, cell):
-		self.cells[cell[0]][cell[1]] = 1
-	
+		if self.contains(cell):
+			self.cells[cell[0]][cell[1]] = 1
+		
 	# Checks if a cell on the grid is obstructed
 	def obstructed(self, cell):
 		return self.cells[cell[0]][cell[1]] == 1
