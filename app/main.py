@@ -8,7 +8,7 @@ import copy
 # Taunts                                                                    #
 ################################################################################
 
-tList = ['Feel the power of the mongoose!','I like to move it move it!','Listen to my mix tape!','You wanna go bruh? Wanna go? HUH?','Staying alive! Staying alive!','Pretty good eh?','Do you fear death?','Let of some ssssssteam...','PURGEEEEEEEE','Come on, kill meeee!','You require more Vespene Gas!','You require more pylons!','Require more overlords!!!','Fear the power of the force...','My goose is bigger than yours!','GRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA']
+tList = ['Feel the power of the mongoose!','I like to move it move it!','Listen to my mix tape!','You wanna go bruh? Wanna go? HUH?','Staying alive! Staying alive!','Pretty good eh?','Do you fear death?','Let of some ssssssteam...','PURGEEEEEEEE','Come on, kill meeee!','You require more Vespene Gas!','You require more pylons!','Require more overlords!!!','Fear the power of the force...','My goose is bigger than yours!']
 lenTList = len(tList)-1
 ################################################################################
 # Constants                                                                    #
@@ -212,8 +212,8 @@ def isPositionBetter(grid, snake, current, pathTo, to):
 			currentPasses += 1
 		if aStar(toGrid, to, goal):
 			toPasses += 1
-	return toPasses >= currentPasses
-	
+	return toPasses < currentPasses
+
 
 ################################################################################
 # Server                                                                       #
