@@ -292,7 +292,6 @@ def move():
 	else:
 		idle = True
 	
-	
 	#------IDLE MOVEMENTS
 	simpleMovements = False
 	if idle:
