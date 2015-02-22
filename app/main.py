@@ -314,6 +314,8 @@ def move():
 		for snake in data['snakes']:										#sorts through snakes
 			for coord in snake['coords']:									#get all snake coords
 				bGrid.obstruct(tuple(coord))									#make obstructions
+		ourTail = tuple(ourSnake['coords'][-1])
+		bGrid.cells[ourTail[0]][ourTail[1]] = 0
 		
 		path = False
 		ind = 0
@@ -346,7 +348,9 @@ def move():
 		for snake in data['snakes']:										#sorts through snakes
 			for coord in snake['coords']:									#get all snake coords
 				cGrid.obstruct(tuple(coord))									#make obstructions
-				
+		ourTail = tuple(ourSnake['coords'][-1])
+		cGrid.cells[ourTail[0]][ourTail[1]] = 0
+			
 		for direction in directions:
 			if direction == curdir:
 				continue
