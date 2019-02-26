@@ -1,3 +1,5 @@
+![Sample game](https://i.imgur.com/etUXAlb.gif)
+
 ## battlesnake-python
 
 A simple [BattleSnake AI](http://battlesnake.io) written in Python. Available live at [battlesnake-python.herokuapp.com](http://battlesnake-python.herokuapp.com).
